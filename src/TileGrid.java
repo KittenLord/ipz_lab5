@@ -18,7 +18,7 @@ public class TileGrid {
         this.grid = new Tile[height][width];
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                grid[x][y] = new EmptyTile();
+                grid[x][y] = new EmptyTile(this);
             }
         }
     }
@@ -34,41 +34,45 @@ public class TileGrid {
     private PlayerTile resetPlayer(int nx, int ny) {
         if(!isWithinBounds(nx, ny)) return null;
         
-        if(isWithinBounds(playerX, playerY)) grid[playerX][playerY] = new EmptyTile();
-        grid[nx][ny] = new PlayerTile();
+        if(isWithinBounds(playerX, playerY)) grid[playerX][playerY] = new EmptyTile(this);
+        grid[nx][ny] = new PlayerTile(this);
         this.playerX = nx;
         this.playerY = ny;
-        return grid[nx][ny];
+        return (PlayerTile)grid[nx][ny];
+    }
+
+    public PlayerTile getPlayer() {
+        if(!isWithinBounds(playerX, playerY)) return null;
+        return (PlayerTile)grid[playerX][playerY];
     }
 
     public PlayerTile setPlayer(int x, int y) {
-        if(!isWithinBounds(x, y)) return null;
         if(isPlayerSet()) return null;
+        if(!isWithinBounds(x, y)) return getPlayer();
 
         return resetPlayer(x, y);
     }
 
     public PlayerTile movePlayer(int dx, int dy) {
         if(!isPlayerSet()) return null;
-        if(Math.abs(dx + dy) > 1) return null;
-        if(!isWithinBounds(playerX + dx, playerY + dy)) return null;
-        if(grid[playerX + dx][playerY + dy] instanceof ObstacleTile) return null;
+        if(Math.abs(dx + dy) > 1) return getPlayer();
+        if(!isWithinBounds(playerX + dx, playerY + dy)) return getPlayer();
+        if(grid[playerX + dx][playerY + dy] instanceof ObstacleTile) return getPlayer();
 
         return resetPlayer(playerX + dx, playerY + dy);
     }
 
-    public boolean teleportPlayer(int x, int y) {
-        if(!isPlayerSet()) return false;
-        if(!isWithinBounds(x, y)) return false;
+    public PlayerTile teleportPlayer(int x, int y) {
+        if(!isPlayerSet()) return null;
+        if(!isWithinBounds(x, y)) return getPlayer();
 
-        resetPlayer(x, y);
-        return true;
+        return resetPlayer(x, y);
     }
 
     public boolean setObstacle(int x, int y) {
         if(!isWithinBounds(x, y)) return false;
         if(x == playerX && y == playerY) return false;
-        grid[x][y] = new ObstacleTile();
+        grid[x][y] = new ObstacleTile(this);
         return true;
     }
 
