@@ -2,7 +2,15 @@ package work5;
 
 import java.util.Scanner;
 
+/**
+ * The class which contains the main method
+ */
 public class Main {
+
+    /**
+     * The entry point of the program
+     * @param args Main arguments
+     */
     public static void main(String[] args) {
         TileGrid grid = new TileGrid(8, 8);
         grid.setPlayer(3, 3);
